@@ -55,7 +55,7 @@ final DUMMY_PRODUTOS = [
     descricao: 'Ideal para aventuras ao ar livre.',
     preco: 39.99,
     imagemUrl:
-        'https://a-static.mlcdn.com.br/800x560/mochila-masculina-faculdade-impermeavel-resistente-grande-alca-de-aco-blend/ifast/15934287819/9467351c6a4cfecb6625f70edaf6bece.jpeg',
+        'https://m.media-amazon.com/images/I/512j-wdy6qL._AC_SX522_.jpg',
   ),
   Produto(
     id: 'p8',
@@ -63,7 +63,7 @@ final DUMMY_PRODUTOS = [
     descricao: 'Proteja seus olhos com estilo.',
     preco: 59.99,
     imagemUrl:
-        'https://d761k9bcwxe2s.cloudfront.net/Custom/Content/Products/36/31/36318_oculos-ray-ban-rb3697-002-1135-pr-6282-0rb3697-002-1135_m1_637424403059607121.png',
+        'https://m.media-amazon.com/images/I/31pEutNZf6L._AC_SX466_.jpg',
   ),
   Produto(
     id: 'p9',
@@ -71,7 +71,7 @@ final DUMMY_PRODUTOS = [
     descricao: 'Um acessório perfeito para qualquer ocasião.',
     preco: 49.99,
     imagemUrl:
-        'https://imgmarketplace.lojasrenner.com.br/20001/2991/7010701113014/7510701940925/1.jpg',
+        'https://m.media-amazon.com/images/I/61QnszzTkfL._AC_UL320_.jpg',
   ),
   Produto(
     id: 'p10',

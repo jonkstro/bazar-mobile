@@ -21,3 +21,4 @@ Criar os componentes e páginas e adicionar elas junto do MultiProvider no Main.
 
 ## Passo 4:
 Criar a Model de Carrinho e adicionar ela no Main e no componente ProdutoItem.
+- A model de Carrinho precisará de outra model CarrinhoItem, onde irão listar cada produto

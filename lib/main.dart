@@ -1,9 +1,9 @@
-import 'package:bazar_do_bem/models/lista_produtos.dart';
-import 'package:bazar_do_bem/utils/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../pages/lista_produtos_page.dart';
+import '../models/lista_produtos.dart';
+import '../utils/app_routes.dart';
 
 void main() {
   // Inicia a execução do aplicativo chamando a função runApp com a instância de MyApp.

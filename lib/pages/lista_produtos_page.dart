@@ -23,8 +23,12 @@ class _ListaProdutosPageState extends State<ListaProdutosPage> {
         actions: [
           /// Popup são os botões que vai ter pra escolher
           PopupMenuButton(
+            padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 20),
+
+            /// Alterar a cor de fundo da seleção pra branco, pois veio default azul
+            surfaceTintColor: Colors.white,
             icon: const Icon(Icons.more_horiz),
-            iconSize: 40,
+            iconSize: 30,
             itemBuilder: (_) => [
               /// Se apertar no item o valor que vai receber é o enum FAVORITOS
               const PopupMenuItem(
@@ -57,11 +61,11 @@ class _ListaProdutosPageState extends State<ListaProdutosPage> {
               });
             },
           ),
-          const SizedBox(width: 20),
           IconButton(
+            padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 20),
             onPressed: () {},
             icon: const Icon(Icons.shopping_cart),
-            iconSize: 40,
+            iconSize: 30,
           ),
         ],
       ),
