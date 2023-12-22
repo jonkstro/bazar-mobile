@@ -1,4 +1,6 @@
+import 'package:bazar_do_bem/models/carrinho.dart';
 import 'package:bazar_do_bem/models/produto.dart';
+import 'package:bazar_do_bem/utils/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -36,21 +38,49 @@ class ProdutoItem extends StatelessWidget {
             textAlign: TextAlign.center,
             style: const TextStyle(color: Colors.white),
           ),
-          trailing: IconButton(
-            onPressed: () {
-              /// TODO: cart.addItem(product);
-            },
-            icon: const Icon(Icons.shopping_cart),
-            color: Theme.of(context).colorScheme.secondary,
+          trailing: Consumer<Carrinho>(
+            builder: (context, carrinho, _) => IconButton(
+              onPressed: () {
+                carrinho.adicionarItem(produto);
+              },
+              // Se a qtd desse produto no carrinho for maior que zero vai exibir a qtd no icone cheio
+              icon: carrinho.getQuantidadeItem(produto.id) > 0
+                  ? Stack( //Stack vai botar o numero e o icone um em cima do outro
+                      children: [
+                        const Icon(Icons.shopping_cart),
+                        Positioned(
+                          bottom: 0,
+                          right: 0,
+                          child: Container(
+                            padding: const EdgeInsets.all(2),
+                            decoration: BoxDecoration(
+                              color: Colors.deepOrange,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            constraints: const BoxConstraints(minHeight: 16, minWidth: 16),
+                            child: Text(
+                              carrinho.getQuantidadeItem(produto.id).toString(),
+                              textAlign: TextAlign.center,
+                              style: const TextStyle(color: Colors.white, fontSize: 10),
+                            ),
+                          ),
+                        )
+                      ],
+                    )
+                  // Se a qtd desse produto no carrinho for igual a zero vai exibir o carrinho outlined
+                  : const Icon(Icons.shopping_cart_outlined),
+              color: Colors.deepOrange,
+            ),
           ),
         ),
+        // GestureDetector serve pra poder clicar na imagem sair pra pagina de Detalhe Produto
         child: GestureDetector(
           child: Image.network(
             produto.imagemUrl,
             fit: BoxFit.cover,
           ),
           onTap: () {
-            /// TODO: PushNamed para DetalheProdutoPage
+            Navigator.of(context).pushNamed(AppRoutes.DETALHE_PRODUTO, arguments: produto);
           },
         ),
       ),

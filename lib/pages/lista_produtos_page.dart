@@ -1,6 +1,10 @@
+import 'package:bazar_do_bem/components/carrinho_badge.dart';
 import 'package:bazar_do_bem/components/produto_grid.dart';
 import 'package:bazar_do_bem/enums/filtro_enum.dart';
+import 'package:bazar_do_bem/models/carrinho.dart';
+import 'package:bazar_do_bem/utils/app_routes.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 // Será statefull, pois terá filtragem de favoritos
 class ListaProdutosPage extends StatefulWidget {
@@ -61,11 +65,21 @@ class _ListaProdutosPageState extends State<ListaProdutosPage> {
               });
             },
           ),
-          IconButton(
-            padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 20),
-            onPressed: () {},
-            icon: const Icon(Icons.shopping_cart),
-            iconSize: 30,
+          Consumer<Carrinho>(
+            /// Aqui vai ter um consumer que vai atualizar a qtd de itens no ícone do carrinho
+            /// passando pro CarrinhoBadge o número e o ícone do carrinho.
+            builder: (context, carrinho, _) => CarrinhoBadge(
+              value: carrinho.qtdItens.toString(),
+              child: IconButton(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 0, horizontal: 20),
+                onPressed: () {
+                  Navigator.of(context).pushNamed(AppRoutes.CARRINHO);
+                },
+                icon: const Icon(Icons.shopping_cart),
+                iconSize: 30,
+              ),
+            ),
           ),
         ],
       ),

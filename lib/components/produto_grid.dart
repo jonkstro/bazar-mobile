@@ -34,6 +34,7 @@ class ProdutoGrid extends StatelessWidget {
       itemBuilder: (ctx, index) {
         /// Tamos envolvendo com ChangeNotifier pra ele "escutar" as alterações
         /// de favorito e atualizar a tela. Sem precisar ser statefull.
+        /// Aqui está sendo usado o ChangeNotifier.value pq ele já foi criado lá no Produto que foi carregado
         return ChangeNotifierProvider.value(
           /// Utiliza o ChangeNotifierProvider para fornecer o estado (Produto) ao widget filho.
           value: produtosCarregados[index],

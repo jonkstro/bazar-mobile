@@ -78,6 +78,8 @@ class Carrinho with ChangeNotifier {
 
   /// Método para obter a quantidade de um item específico no carrinho com base no ID do produto
   int getQuantidadeItem(String idProduto) {
+    // Contem o idProduto? Se sim, boto a quantidade, senão, boto 0.
+    // o ?? serve pra botar um valor caso nulo. Nesse caso se produto for nulo bota 0.
     return _itens.containsKey(idProduto) ? _itens[idProduto]?.quantidade ?? 0 : 0;
   }
 }

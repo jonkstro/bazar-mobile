@@ -1,3 +1,6 @@
+import 'package:bazar_do_bem/models/carrinho.dart';
+import 'package:bazar_do_bem/pages/carrinho_page.dart';
+import 'package:bazar_do_bem/pages/detalhes_produto_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -23,6 +26,8 @@ class MyApp extends StatelessWidget {
       providers: [
         // Provedor de Mudança de Notificador para a Lista de Produtos.
         ChangeNotifierProvider(create: (_) => ListaProdutos()),
+        ChangeNotifierProvider(create: (_) => Carrinho()),
+
         // Adicione mais provedores conforme necessário para diferentes estados.
       ],
       child: MaterialApp(
@@ -34,9 +39,9 @@ class MyApp extends StatelessWidget {
           useMaterial3: true,
           // Esquema de cores personalizado, com as cores primária e secundária definidas.
           colorScheme: ColorScheme.fromSwatch().copyWith(
-            primary: Colors.purple, // Cor primária definida como roxo.
-            secondary: Colors
-                .deepOrange, // Cor secundária definida como laranja profundo.
+            primary: Colors.purple,
+            secondary: Colors.deepOrange,
+            error: Colors.red,
           ),
           // Define a fonte padrão para todo o aplicativo como 'Lato'.
           fontFamily: 'Lato',
@@ -46,7 +51,9 @@ class MyApp extends StatelessWidget {
         // Só pode deixar um ou outro pra não dar erro.
         // home: const ListaProdutosPage(),
         routes: {
-          AppRoutes.HOME: (ctx) => const ListaProdutosPage(),
+          AppRoutes.HOME: (context) => const ListaProdutosPage(),
+          AppRoutes.DETALHE_PRODUTO: (context) => const DetalheProdutoPage(),
+          AppRoutes.CARRINHO: (context) => const CarrinhoPage(),
         },
         // Remover a flag de debug:
         debugShowCheckedModeBanner: false,
