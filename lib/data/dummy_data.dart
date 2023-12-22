@@ -20,7 +20,8 @@ final DUMMY_PRODUTOS = [
   Produto(
     id: 'p3',
     nome: 'Cachecol Amarelo',
-    descricao: 'Quente e aconchegante - exatamente o que você precisa para o inverno.',
+    descricao:
+        'Quente e aconchegante - exatamente o que você precisa para o inverno.',
     preco: 19.99,
     imagemUrl: 'https://live.staticflickr.com/4043/4438260868_cc79b3369d_z.jpg',
   ),
@@ -38,7 +39,7 @@ final DUMMY_PRODUTOS = [
     descricao: 'Confortáveis e estilosos para suas atividades físicas.',
     preco: 79.99,
     imagemUrl:
-        'https://cdn.pixabay.com/photo/2017/08/07/18/57/sport-shoes-2601066_1280.jpg',
+        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRXOXpx7dIjci8QAQ5UdtuFn7YjYlyH00_XeHPH1769Yw&s',
   ),
   Produto(
     id: 'p6',
@@ -46,7 +47,7 @@ final DUMMY_PRODUTOS = [
     descricao: 'Um relógio que combina com qualquer ocasião.',
     preco: 99.99,
     imagemUrl:
-        'https://cdn.pixabay.com/photo/2016/11/29/09/34/clock-1869232_1280.jpg',
+        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQoAjySAtiaJuKKweIOxhdCaq9CHwEZtSPxP9zae-FP2A&s',
   ),
   Produto(
     id: 'p7',
@@ -54,7 +55,7 @@ final DUMMY_PRODUTOS = [
     descricao: 'Ideal para aventuras ao ar livre.',
     preco: 39.99,
     imagemUrl:
-        'https://cdn.pixabay.com/photo/2016/03/27/22/43/backpack-1281591_1280.jpg',
+        'https://a-static.mlcdn.com.br/800x560/mochila-masculina-faculdade-impermeavel-resistente-grande-alca-de-aco-blend/ifast/15934287819/9467351c6a4cfecb6625f70edaf6bece.jpeg',
   ),
   Produto(
     id: 'p8',
@@ -62,7 +63,7 @@ final DUMMY_PRODUTOS = [
     descricao: 'Proteja seus olhos com estilo.',
     preco: 59.99,
     imagemUrl:
-        'https://cdn.pixabay.com/photo/2015/09/18/20/44/sunglasses-945497_1280.jpg',
+        'https://d761k9bcwxe2s.cloudfront.net/Custom/Content/Products/36/31/36318_oculos-ray-ban-rb3697-002-1135-pr-6282-0rb3697-002-1135_m1_637424403059607121.png',
   ),
   Produto(
     id: 'p9',
@@ -70,7 +71,7 @@ final DUMMY_PRODUTOS = [
     descricao: 'Um acessório perfeito para qualquer ocasião.',
     preco: 49.99,
     imagemUrl:
-        'https://cdn.pixabay.com/photo/2016/11/23/17/16/handbag-1853954_1280.jpg',
+        'https://imgmarketplace.lojasrenner.com.br/20001/2991/7010701113014/7510701940925/1.jpg',
   ),
   Produto(
     id: 'p10',
@@ -78,6 +79,6 @@ final DUMMY_PRODUTOS = [
     descricao: 'Tenha todas as ferramentas necessárias em um só lugar.',
     preco: 69.99,
     imagemUrl:
-        'https://cdn.pixabay.com/photo/2015/09/18/18/03/tool-box-944801_1280.jpg',
+        'https://static.ferramentaskennedy.com.br/storage/original/caixa-para-ferramentas-tipo-bau-com-4-gaveta-428337-worker_1_tDrCI.jpg',
   ),
 ];

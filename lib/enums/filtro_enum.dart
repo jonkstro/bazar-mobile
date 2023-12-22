@@ -1,0 +1,4 @@
+enum FiltroEnum {
+  FAVORITOS,
+  TODOS,
+}

@@ -17,8 +17,12 @@ class Produto with ChangeNotifier {
     required this.imagemUrl,
     this.isFavorito = false,
   });
+
   /// Função que vai alternar o estado de favorito
   void mudarIsFavorito() {
     isFavorito = !isFavorito;
+
+    /// Aqui ele vai avisar lá no componente ProdutoItem que mudou
+    notifyListeners();
   }
 }
