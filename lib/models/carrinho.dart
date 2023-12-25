@@ -76,10 +76,40 @@ class Carrinho with ChangeNotifier {
     notifyListeners();
   }
 
+  /// Método para remover só 1 item quando clicar em DESFAZER no SNACKBAR
+  void removerUnicoItem(String idProduto) {
+    // Se não localizar o item que quer remover, faz nada
+    if (!_itens.containsKey(idProduto)) {
+      return;
+    } else {
+      // Se conseguir localizar o item que quer remover e só tiver 1 item,
+      //vai remover o item do carrinho ao invés de reduzir a qtd dele.
+      if (_itens[idProduto]!.quantidade == 1) {
+        removerItem(idProduto);
+      } else if (_itens[idProduto]!.quantidade > 1) {
+        // Se conseguir localizar o item que quer remover,vai diminuir a qtd -1
+        _itens.update(
+          idProduto,
+          // Vai ser exatamente igual produto localizado, menos a qtd dele que vai reduzir 1
+          (prod) => CarrinhoItem(
+              id: prod.id,
+              idProduto: prod.idProduto,
+              nome: prod.nome,
+              quantidade: prod.quantidade - 1,
+              preco: prod.preco),
+        );
+      }
+    }
+    // Atualizar aos interessados que estão "escutando" essa alteração
+    notifyListeners();
+  }
+
   /// Método para obter a quantidade de um item específico no carrinho com base no ID do produto
   int getQuantidadeItem(String idProduto) {
     // Contem o idProduto? Se sim, boto a quantidade, senão, boto 0.
     // o ?? serve pra botar um valor caso nulo. Nesse caso se produto for nulo bota 0.
-    return _itens.containsKey(idProduto) ? _itens[idProduto]?.quantidade ?? 0 : 0;
+    return _itens.containsKey(idProduto)
+        ? _itens[idProduto]?.quantidade ?? 0
+        : 0;
   }
 }

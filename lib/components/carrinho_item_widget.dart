@@ -29,7 +29,40 @@ class CarrinhoItemWidget extends StatelessWidget {
           size: 40,
         ),
       ),
-      // Callback chamado quando o item é arrastado para ser removido.
+      // Vai confirmar se vai excluir ou não. O confirm dismiss pede uma direção, mas como
+      // já informamos que vai só pra um lado não precisa informar ela aqui.
+      confirmDismiss: (_) {
+        // Vai abrir um Diálogo pra confirmar com Sim (FECHA RETORNANDO TRUE) ou Não (FECHA RETORNANDO FALSE)
+        return showDialog(
+          context: context,
+          builder: (ctx) {
+            return AlertDialog(
+              backgroundColor: Colors.white,
+              title: const Text('Tem Certeza?'),
+              content: const Text('Quer realmente remover o item do carrinho?'),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    // Através do Navigator.pop vamos retornar o FUTURE que o confirmDismiss
+                    // espera receber, com um false (user não quer remover, vai cancelar).
+                    Navigator.of(ctx).pop(false);
+                  },
+                  child: const Text('Não'),
+                ),
+                TextButton(
+                  onPressed: () {
+                    // Através do Navigator.pop vamos retornar o FUTURE que o confirmDismiss
+                    // espera receber, com um true (quer realmente remover).
+                    Navigator.of(ctx).pop(true);
+                  },
+                  child: const Text('Sim'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+      // Callback chamado quando o item é arrastado para ser removido. O confirmDismiss chama o onDismissed
       onDismissed: (_) {
         // Remove o item do carrinho usando o Provider.
         Provider.of<Carrinho>(
@@ -39,6 +72,8 @@ class CarrinhoItemWidget extends StatelessWidget {
       },
       // Conteúdo principal do widget.
       child: Card(
+        elevation: 5,
+        surfaceTintColor: Colors.white,
         margin: const EdgeInsets.symmetric(
           horizontal: 15,
           vertical: 4,

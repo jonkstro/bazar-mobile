@@ -1,3 +1,4 @@
+import 'package:bazar_do_bem/components/app_drawer.dart';
 import 'package:bazar_do_bem/components/carrinho_badge.dart';
 import 'package:bazar_do_bem/components/produto_grid.dart';
 import 'package:bazar_do_bem/enums/filtro_enum.dart';
@@ -71,8 +72,10 @@ class _ListaProdutosPageState extends State<ListaProdutosPage> {
             builder: (context, carrinho, _) => CarrinhoBadge(
               value: carrinho.qtdItens.toString(),
               child: IconButton(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 0, horizontal: 20),
+                padding: const EdgeInsets.symmetric(
+                  vertical: 0,
+                  horizontal: 20,
+                ),
                 onPressed: () {
                   Navigator.of(context).pushNamed(AppRoutes.CARRINHO);
                 },
@@ -84,6 +87,7 @@ class _ListaProdutosPageState extends State<ListaProdutosPage> {
         ],
       ),
       body: ProdutoGrid(mostrarSomenteFavorito: _mostrarFavoritos),
+      drawer: const AppDrawer(),
     );
   }
 }

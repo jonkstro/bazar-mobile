@@ -1,6 +1,10 @@
 import 'package:bazar_do_bem/models/carrinho.dart';
+import 'package:bazar_do_bem/models/lista_pedidos.dart';
 import 'package:bazar_do_bem/pages/carrinho_page.dart';
 import 'package:bazar_do_bem/pages/detalhes_produto_page.dart';
+import 'package:bazar_do_bem/pages/formulario_produto_page.dart';
+import 'package:bazar_do_bem/pages/pedidos_page.dart';
+import 'package:bazar_do_bem/pages/produto_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -27,6 +31,7 @@ class MyApp extends StatelessWidget {
         // Provedor de Mudança de Notificador para a Lista de Produtos.
         ChangeNotifierProvider(create: (_) => ListaProdutos()),
         ChangeNotifierProvider(create: (_) => Carrinho()),
+        ChangeNotifierProvider(create: (_) => ListaPedidos()),
 
         // Adicione mais provedores conforme necessário para diferentes estados.
       ],
@@ -54,6 +59,9 @@ class MyApp extends StatelessWidget {
           AppRoutes.HOME: (context) => const ListaProdutosPage(),
           AppRoutes.DETALHE_PRODUTO: (context) => const DetalheProdutoPage(),
           AppRoutes.CARRINHO: (context) => const CarrinhoPage(),
+          AppRoutes.PEDIDOS: (context) => const PedidosPage(),
+          AppRoutes.PRODUTOS: (context) => const ProdutoPage(),
+          AppRoutes.PRODUTOS_FORM: (context) => const FormularioProdutoPage(),
         },
         // Remover a flag de debug:
         debugShowCheckedModeBanner: false,

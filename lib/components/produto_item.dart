@@ -40,12 +40,10 @@ class ProdutoItem extends StatelessWidget {
           ),
           trailing: Consumer<Carrinho>(
             builder: (context, carrinho, _) => IconButton(
-              onPressed: () {
-                carrinho.adicionarItem(produto);
-              },
               // Se a qtd desse produto no carrinho for maior que zero vai exibir a qtd no icone cheio
               icon: carrinho.getQuantidadeItem(produto.id) > 0
-                  ? Stack( //Stack vai botar o numero e o icone um em cima do outro
+                  ? Stack(
+                      //Stack vai botar o numero e o icone um em cima do outro
                       children: [
                         const Icon(Icons.shopping_cart),
                         Positioned(
@@ -57,11 +55,13 @@ class ProdutoItem extends StatelessWidget {
                               color: Colors.deepOrange,
                               borderRadius: BorderRadius.circular(10),
                             ),
-                            constraints: const BoxConstraints(minHeight: 16, minWidth: 16),
+                            constraints: const BoxConstraints(
+                                minHeight: 16, minWidth: 16),
                             child: Text(
                               carrinho.getQuantidadeItem(produto.id).toString(),
                               textAlign: TextAlign.center,
-                              style: const TextStyle(color: Colors.white, fontSize: 10),
+                              style: const TextStyle(
+                                  color: Colors.white, fontSize: 10),
                             ),
                           ),
                         )
@@ -70,6 +70,26 @@ class ProdutoItem extends StatelessWidget {
                   // Se a qtd desse produto no carrinho for igual a zero vai exibir o carrinho outlined
                   : const Icon(Icons.shopping_cart_outlined),
               color: Colors.deepOrange,
+              onPressed: () {
+                carrinho.adicionarItem(produto);
+                // Para não abrir um atras do outro, vou fechar o que tiver aberto
+                // antes de abrir o próximo.
+                ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                // Vai abrir a snackbar e vai executar o método de remover 1 item
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: const Text('Idem adicionado!'),
+                    duration: const Duration(seconds: 2),
+                    action: SnackBarAction(
+                      label: 'DESFAZER',
+                      // Ao clicar em DESFAZER vai remover 1 item do carrinho
+                      onPressed: () {
+                        carrinho.removerUnicoItem(produto.id);
+                      },
+                    ),
+                  ),
+                );
+              },
             ),
           ),
         ),
@@ -78,9 +98,20 @@ class ProdutoItem extends StatelessWidget {
           child: Image.network(
             produto.imagemUrl,
             fit: BoxFit.cover,
+            // Se der algum erro na imagem vai adicionar uma mensagem de erro
+            errorBuilder: (context, error, stackTrace) {
+              return Container(
+                alignment: Alignment.center,
+                decoration: const BoxDecoration(color: Colors.red),
+                child: const Text('ERRO AO EXIBIR IMAGEM'),
+              );
+            },
           ),
           onTap: () {
-            Navigator.of(context).pushNamed(AppRoutes.DETALHE_PRODUTO, arguments: produto);
+            Navigator.of(context).pushNamed(
+              AppRoutes.DETALHE_PRODUTO,
+              arguments: produto,
+            );
           },
         ),
       ),

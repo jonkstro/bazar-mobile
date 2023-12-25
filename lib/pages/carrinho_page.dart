@@ -1,5 +1,6 @@
 import 'package:bazar_do_bem/components/carrinho_item_widget.dart';
 import 'package:bazar_do_bem/models/carrinho.dart';
+import 'package:bazar_do_bem/models/lista_pedidos.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -19,13 +20,14 @@ class CarrinhoPage extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('Carrinhooooo'),
+        title: const Text('Carrinho'),
         centerTitle: true,
       ),
       body: Column(
         children: <Widget>[
           // Card exibindo o total do carrinho.
           Card(
+            surfaceTintColor: Colors.white,
             margin: const EdgeInsets.symmetric(
               horizontal: 15,
               vertical: 25,
@@ -60,14 +62,15 @@ class CarrinhoPage extends StatelessWidget {
                   // Botão para realizar a compra (ainda não implementado).
                   TextButton(
                     onPressed: () {
-                      // Adicionar lógica para concluir a compra.
-                      // Provider.of<OrderList>(
-                      //   context,
-                      //   listen: false,
-                      // ).addOrder(cart);
-
+                      // Vai chamar o método de adicionar pedido do provider do ListaPedidos
+                      Provider.of<ListaPedidos>(
+                        context,
+                        // Não pode ter listen igual a TRUE pois está fora do build!!!!!!
+                        // se botar sem listen = FALSE vai dar Exception.
+                        listen: false,
+                      ).addPedido(carrinho);
                       // Limpar o carrinho após a compra.
-                      // cart.clear();
+                      carrinho.limpar();
                     },
                     child: const Text('COMPRAR'),
                   ),
@@ -80,7 +83,9 @@ class CarrinhoPage extends StatelessWidget {
             child: ListView.builder(
               itemCount: itens.length,
               itemBuilder: (context, index) {
-                return CarrinhoItemWidget(carrinhoItem: itens[index]);  // Ainda precisa ser implementado.
+                return CarrinhoItemWidget(
+                    carrinhoItem:
+                        itens[index]); // Ainda precisa ser implementado.
               },
             ),
           ),

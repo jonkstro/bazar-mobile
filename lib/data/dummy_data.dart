@@ -54,24 +54,21 @@ final DUMMY_PRODUTOS = [
     nome: 'Mochila Resistente',
     descricao: 'Ideal para aventuras ao ar livre.',
     preco: 39.99,
-    imagemUrl:
-        'https://m.media-amazon.com/images/I/512j-wdy6qL._AC_SX522_.jpg',
+    imagemUrl: 'https://m.media-amazon.com/images/I/512j-wdy6qL._AC_SX522_.jpg',
   ),
   Produto(
     id: 'p8',
     nome: 'Óculos de Sol Modernos',
     descricao: 'Proteja seus olhos com estilo.',
     preco: 59.99,
-    imagemUrl:
-        'https://m.media-amazon.com/images/I/31pEutNZf6L._AC_SX466_.jpg',
+    imagemUrl: 'https://m.media-amazon.com/images/I/31pEutNZf6L._AC_SX466_.jpg',
   ),
   Produto(
     id: 'p9',
     nome: 'Bolsa Elegante',
     descricao: 'Um acessório perfeito para qualquer ocasião.',
     preco: 49.99,
-    imagemUrl:
-        'https://m.media-amazon.com/images/I/61QnszzTkfL._AC_UL320_.jpg',
+    imagemUrl: 'https://m.media-amazon.com/images/I/61QnszzTkfL._AC_UL320_.jpg',
   ),
   Produto(
     id: 'p10',
@@ -79,6 +76,6 @@ final DUMMY_PRODUTOS = [
     descricao: 'Tenha todas as ferramentas necessárias em um só lugar.',
     preco: 69.99,
     imagemUrl:
-        'https://static.ferramentaskennedy.com.br/storage/original/caixa-para-ferramentas-tipo-bau-com-4-gaveta-428337-worker_1_tDrCI.jpg',
+        'https://static.ferramentaskennedy.com.age/original/caixa-para-ferramentas-tipo-bau-com-4-gaveta-428337-worker_1_tDrCI.jpg',
   ),
 ];
