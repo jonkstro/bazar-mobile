@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:bazar_do_bem/models/lista_produtos.dart';
 import 'package:bazar_do_bem/models/produto.dart';
 import 'package:flutter/material.dart';
@@ -21,6 +23,9 @@ class _FormularioProdutoPageState extends State<FormularioProdutoPage> {
   /// diferentes dados no form [string/double/ind]...). Esses dados vão ser jogados no provider
   /// do ListaProdutos para poder fazer o seu CREATE/UPDATE.
   final _dadosFormulario = Map<String, Object>();
+
+  // Variavel pra ativar o progressive bar de carregando
+  bool _isLoading = false;
 
   // Método que vai atualizar a imagem na FittedBox.
   // o setState vazio já é suficiente pra refreshar a imagem com a url
@@ -74,7 +79,7 @@ class _FormularioProdutoPageState extends State<FormularioProdutoPage> {
   }
 
   // Vai salvar cada um dos campos do form chamando o onSaved de cada um
-  void _submitFormulario() {
+  Future<void> _submitFormulario() async {
     // Validação dos campos do formulario: Se tiver o que validar ele valida,
     //se não tiver nada pra validar (chave for vazia) manda false pois deu algum erro
     final isValid = _keyFormulario.currentState?.validate() ?? false;
@@ -85,14 +90,51 @@ class _FormularioProdutoPageState extends State<FormularioProdutoPage> {
 
     _keyFormulario.currentState?.save();
 
+    // Setar os isLoading igual a true, quer dizer que vai tar carregando a página
+    setState(() => _isLoading = true);
+
     // Chamando o método que vai CRIAR/ATUALIZAR o produto pelo provider de ListaProdutos
     // Pra não dar erro, vai ter que botar listen = false, pois está fora do build.
-    Provider.of<ListaProdutos>(
-      context,
-      listen: false,
-    ).createProduto(_dadosFormulario);
-    // Voltar pra tela anterior:
-    Navigator.of(context).pop();
+    try {
+      await Provider.of<ListaProdutos>(
+        context,
+        listen: false,
+      ).createProduto(_dadosFormulario);
+      // Voltar pra tela anterior:
+      Navigator.of(context).pop();
+    } catch (error) {
+      // Se der algum erro, vai abrir um AlertDialog e voltar pra página anterior se apertar OK
+      await showDialog(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          backgroundColor: Colors.red,
+          title: const Text(
+            'Ocorreu um erro',
+            style: TextStyle(color: Colors.white),
+          ),
+          content: Text(
+            error.toString(),
+            style: const TextStyle(color: Colors.white),
+          ),
+          actions: [
+            TextButton(
+              child: const Text(
+                'Ok',
+                style: TextStyle(color: Colors.white),
+              ),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+          ],
+        ),
+      );
+    } finally {
+      // Independente do que aconteça ele executa o finally
+
+      // Setar os isLoading igual a false, quer dizer que já carregou a página
+      setState(() => _isLoading = false);
+      // Espera primeiro processar para poder voltar pra tela anterior:
+      // Navigator.of(context).pop();
+    }
   }
 
   // Método que vai validar a URL da imagem que vai ser adicionada pra não dar erro de imagem
@@ -126,131 +168,22 @@ class _FormularioProdutoPageState extends State<FormularioProdutoPage> {
         ],
       ),
       backgroundColor: Colors.white,
-      body: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: Form(
-          // Vamos identificar o formulário pela chave dele
-          key: _keyFormulario,
-          child: ListView(
-            children: [
-              TextFormField(
-                // Se tiver dados vem pro campo pra editar, senão é só o campo vazio
-                initialValue: _dadosFormulario['nome']?.toString(),
-                decoration: const InputDecoration(
-                  label: Text('Nome'),
-                  enabledBorder: UnderlineInputBorder(),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(20),
-                    ),
-                  ),
-                ),
-                // Se clicar no ENTER do teclado vai pro próximo input do form
-                textInputAction: TextInputAction.next,
-                // Ao submitar o form, o formdata vai receber no campo nome o valor
-                // do textfield, senão, se tiver vazio (??) vai receber '' (string vazia).
-                onSaved: (nome) => _dadosFormulario['nome'] = nome ?? '',
-                // VALIDAÇÕES DO CAMPO:
-                validator: (value) {
-                  final String nome = value ?? '';
-                  // Validar se tá só espaço em branco:
-                  if (nome.trim().isEmpty) {
-                    return 'O campo nome é obrigatório';
-                  }
-
-                  // Aqui iremos primeiro remover todos espaços em branco para poder depois
-                  // medir a quantidade de letras e ver se tem mais de 5 caracteres
-                  if (nome.replaceAll(' ', '').length < 5) {
-                    return 'Nome precisa ter pelo menos 5 caracteres';
-                  }
-
-                  // Quando tem return null quer dizer que não teve erros
-                  return null;
-                },
-              ),
-              const SizedBox(height: 25),
-              TextFormField(
-                // Se tiver dados vem pro campo pra editar, senão é só o campo vazio
-                initialValue: _dadosFormulario['preco']?.toString(),
-                decoration: const InputDecoration(
-                  label: Text('Preço'),
-                  enabledBorder: UnderlineInputBorder(),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(20),
-                    ),
-                  ),
-                ),
-                // Se clicar no ENTER do teclado vai pro próximo input do form
-                textInputAction: TextInputAction.next,
-                // Precisa desse decimal = true pq o IOS não tem vírgula
-                keyboardType: const TextInputType.numberWithOptions(
-                  decimal: true,
-                ),
-                // Ao submitar o form, o formdata vai receber no campo preco o valor
-                // do textfield, senão, se tiver vazio (??) vai receber '0' (vai parsear 0.0).
-                onSaved: (preco) =>
-                    _dadosFormulario['preco'] = double.parse(preco ?? '0'),
-                validator: (value) {
-                  final String precoString = value ?? '';
-                  // Vamos tentar parsear o valor da string, se não conseguir mete um -1 pra dar erro
-                  final double preco = double.tryParse(precoString) ?? -1;
-
-                  if (preco <= 0) {
-                    return 'Insira um preço válido';
-                  }
-
-                  // Quando tem return null quer dizer que não teve erros
-                  return null;
-                },
-              ),
-              const SizedBox(height: 25),
-              TextFormField(
-                // Se tiver dados vem pro campo pra editar, senão é só o campo vazio
-                initialValue: _dadosFormulario['descricao']?.toString(),
-                decoration: const InputDecoration(
-                  label: Text('Descricao'),
-                  enabledBorder: UnderlineInputBorder(),
-                  focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(20),
-                    ),
-                  ),
-                ),
-                // Se clicar no ENTER do teclado vai pro próximo input do form
-                textInputAction: TextInputAction.newline,
-                keyboardType: TextInputType.multiline,
-                // Ao submitar o form, o formdata vai receber no campo descricao o valor
-                // do textfield, senão, se tiver vazio (??) vai receber '' (string vazia).
-                onSaved: (descricao) =>
-                    _dadosFormulario['descricao'] = descricao ?? '',
-                // VALIDAÇÕES DO CAMPO:
-                validator: (value) {
-                  final String descricao = value ?? '';
-                  // Validar se tá só espaço em branco:
-                  if (descricao.trim().isEmpty) {
-                    return 'O campo descricao é obrigatório';
-                  }
-
-                  // Aqui iremos primeiro remover todos espaços em branco para poder depois
-                  // medir a quantidade de letras e ver se tem mais de 5 caracteres
-                  if (descricao.replaceAll(' ', '').length < 15) {
-                    return 'Descricao precisa ter pelo menos 15 caracteres';
-                  }
-
-                  // Quando tem return null quer dizer que não teve erros
-                  return null;
-                },
-              ),
-              const SizedBox(height: 25),
-              Row(
-                // Pra deixar o textfield e a box do container alinhados no chão
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Expanded(
-                    child: TextFormField(
+      body: _isLoading // Se tiver carregando vai mostrar uma barra circular
+          ? const Center(
+              child: CircularProgressIndicator(),
+            )
+          : Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: Form(
+                // Vamos identificar o formulário pela chave dele
+                key: _keyFormulario,
+                child: ListView(
+                  children: [
+                    TextFormField(
+                      // Se tiver dados vem pro campo pra editar, senão é só o campo vazio
+                      initialValue: _dadosFormulario['nome']?.toString(),
                       decoration: const InputDecoration(
-                        labelText: 'Url da Imagem',
+                        label: Text('Nome'),
                         enabledBorder: UnderlineInputBorder(),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.all(
@@ -258,66 +191,200 @@ class _FormularioProdutoPageState extends State<FormularioProdutoPage> {
                           ),
                         ),
                       ),
-                      keyboardType: TextInputType.url,
-                      textInputAction: TextInputAction.done,
-                      // A partir do controller vamos acessar o texto pra poder
-                      // mostrar o container com a imagem da url.
-                      controller: _imagemUrlController,
-
-                      /// OPCIONAL: Quando for submitado vai chamar o submitform
-                      // onFieldSubmitted: (_) => _submitFormulario(),
-
-                      // Ao submitar o form, o formdata vai receber no campo imagemUrl o valor
+                      // Se clicar no ENTER do teclado vai pro próximo input do form
+                      textInputAction: TextInputAction.next,
+                      // Ao submitar o form, o formdata vai receber no campo nome o valor
                       // do textfield, senão, se tiver vazio (??) vai receber '' (string vazia).
-                      onSaved: (imagemUrl) =>
-                          _dadosFormulario['imagemUrl'] = imagemUrl ?? '',
+                      onSaved: (nome) => _dadosFormulario['nome'] = nome ?? '',
                       // VALIDAÇÕES DO CAMPO:
                       validator: (value) {
-                        final String imagemUrl = value ?? '';
-                        if (isValidImagemUrl(imagemUrl) == false) {
-                          return 'Informe uma URL válida';
-                        } else {
-                          return null;
+                        final String nome = value ?? '';
+                        // Validar se tá só espaço em branco:
+                        if (nome.trim().isEmpty) {
+                          return 'O campo nome é obrigatório';
                         }
+
+                        // Aqui iremos primeiro remover todos espaços em branco para poder depois
+                        // medir a quantidade de letras e ver se tem mais de 5 caracteres
+                        if (nome.replaceAll(' ', '').length < 5) {
+                          return 'Nome precisa ter pelo menos 5 caracteres';
+                        }
+
+                        // Quando tem return null quer dizer que não teve erros
+                        return null;
                       },
                     ),
-                  ),
-                  // Esse container vai exibir a imagem certinha
-                  Container(
-                    // Pra não ficar colado na de cima e no textfield
-                    margin: const EdgeInsets.only(top: 10, left: 10),
-                    width: 100,
-                    height: 100,
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: Colors.grey,
-                        width: 1,
+                    const SizedBox(height: 25),
+                    TextFormField(
+                      // Se tiver dados vem pro campo pra editar, senão é só o campo vazio
+                      initialValue: _dadosFormulario['preco']?.toString(),
+                      decoration: const InputDecoration(
+                        label: Text('Preço'),
+                        enabledBorder: UnderlineInputBorder(),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(20),
+                          ),
+                        ),
                       ),
+                      // Se clicar no ENTER do teclado vai pro próximo input do form
+                      textInputAction: TextInputAction.next,
+                      // Precisa desse decimal = true pq o IOS não tem vírgula
+                      keyboardType: const TextInputType.numberWithOptions(
+                        decimal: true,
+                      ),
+                      // Ao submitar o form, o formdata vai receber no campo preco o valor
+                      // do textfield, senão, se tiver vazio (??) vai receber '0' (vai parsear 0.0).
+                      onSaved: (preco) => _dadosFormulario['preco'] =
+                          double.parse(preco ?? '0'),
+                      validator: (value) {
+                        final String precoString = value ?? '';
+                        // Vamos tentar parsear o valor da string, se não conseguir mete um -1 pra dar erro
+                        final double preco = double.tryParse(precoString) ?? -1;
+
+                        if (preco <= 0) {
+                          return 'Insira um preço válido';
+                        }
+
+                        // Quando tem return null quer dizer que não teve erros
+                        return null;
+                      },
                     ),
-                    alignment: Alignment.center,
-                    child: _imagemUrlController.text.isEmpty
-                        ? const Text('Insira uma URL')
-                        : FittedBox(
-                            fit: BoxFit.cover,
-                            child: Image.network(
-                              _imagemUrlController.text,
-                              errorBuilder: (context, error, stackTrace) {
-                                return const Text(
-                                  'URL inválida ',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(fontSize: 20),
-                                  softWrap: true,
-                                );
-                              },
+                    const SizedBox(height: 25),
+                    TextFormField(
+                      // Se tiver dados vem pro campo pra editar, senão é só o campo vazio
+                      initialValue: _dadosFormulario['descricao']?.toString(),
+                      decoration: const InputDecoration(
+                        label: Text('Descricao'),
+                        enabledBorder: UnderlineInputBorder(),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(20),
+                          ),
+                        ),
+                      ),
+                      // Se clicar no ENTER do teclado vai pro próximo input do form
+                      textInputAction: TextInputAction.newline,
+                      keyboardType: TextInputType.multiline,
+                      // Ao submitar o form, o formdata vai receber no campo descricao o valor
+                      // do textfield, senão, se tiver vazio (??) vai receber '' (string vazia).
+                      onSaved: (descricao) =>
+                          _dadosFormulario['descricao'] = descricao ?? '',
+                      // VALIDAÇÕES DO CAMPO:
+                      validator: (value) {
+                        final String descricao = value ?? '';
+                        // Validar se tá só espaço em branco:
+                        if (descricao.trim().isEmpty) {
+                          return 'O campo descricao é obrigatório';
+                        }
+
+                        // Aqui iremos primeiro remover todos espaços em branco para poder depois
+                        // medir a quantidade de letras e ver se tem mais de 5 caracteres
+                        if (descricao.replaceAll(' ', '').length < 15) {
+                          return 'Descricao precisa ter pelo menos 15 caracteres';
+                        }
+
+                        // Quando tem return null quer dizer que não teve erros
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 25),
+                    Row(
+                      // Pra deixar o textfield e a box do container alinhados no chão
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Expanded(
+                          child: TextFormField(
+                            decoration: const InputDecoration(
+                              labelText: 'Url da Imagem',
+                              enabledBorder: UnderlineInputBorder(),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(20),
+                                ),
+                              ),
+                            ),
+                            keyboardType: TextInputType.url,
+                            textInputAction: TextInputAction.done,
+                            // A partir do controller vamos acessar o texto pra poder
+                            // mostrar o container com a imagem da url.
+                            controller: _imagemUrlController,
+
+                            /// OPCIONAL: Quando for submitado vai chamar o submitform
+                            // onFieldSubmitted: (_) => _submitFormulario(),
+
+                            // Ao submitar o form, o formdata vai receber no campo imagemUrl o valor
+                            // do textfield, senão, se tiver vazio (??) vai receber '' (string vazia).
+                            onSaved: (imagemUrl) =>
+                                _dadosFormulario['imagemUrl'] = imagemUrl ?? '',
+                            // VALIDAÇÕES DO CAMPO:
+                            validator: (value) {
+                              final String imagemUrl = value ?? '';
+                              if (isValidImagemUrl(imagemUrl) == false) {
+                                return 'Informe uma URL válida';
+                              } else {
+                                return null;
+                              }
+                            },
+                          ),
+                        ),
+                        // Esse container vai exibir a imagem certinha
+                        Container(
+                          // Pra não ficar colado na de cima e no textfield
+                          margin: const EdgeInsets.only(top: 10, left: 10),
+                          width: 100,
+                          height: 100,
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              color: Colors.grey,
+                              width: 1,
                             ),
                           ),
-                  )
-                ],
+                          alignment: Alignment.center,
+                          child: _imagemUrlController.text.isEmpty
+                              ? const Text('Insira uma URL')
+                              : Image.network(
+                                  _imagemUrlController.text,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return const Text(
+                                      'URL inválida ',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(fontSize: 20),
+                                      softWrap: true,
+                                    );
+                                  },
+                                ),
+                        )
+                      ],
+                    ),
+                    Container(
+                      margin: const EdgeInsets.symmetric(
+                        vertical: 20,
+                        horizontal: 100,
+                      ),
+                      height: 60,
+                      child: ElevatedButton.icon(
+                        onPressed: () {
+                          _submitFormulario();
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor:
+                              Theme.of(context).colorScheme.primary,
+                        ),
+                        icon: const Icon(
+                          Icons.save,
+                          color: Colors.white,
+                        ),
+                        label: const Text(
+                          'SALVAR',
+                          style: TextStyle(fontSize: 20, color: Colors.white),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ],
-          ),
-        ),
-      ),
+            ),
     );
   }
 }

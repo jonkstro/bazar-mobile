@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 
 // import '../data/dummy_data.dart';
 import 'produto.dart';
@@ -15,8 +16,7 @@ class ListaProdutos with ChangeNotifier {
   // final List<Produto> _itens = DUMMY_PRODUTOS;
   final List<Produto> _itens = []; // Vai ser carregado pelo backend agora
 
-  // URL do backend hospedado no railway
-  // final String _urlBase = 'https://bazar-backend.up.railway.app';
+  // URL do backend hospedado no railway, temos que usar o https pra funcionar
   final _url = Uri.https('bazar-backend.up.railway.app', 'produto');
 
   // Getter para obter uma cópia imutável da lista de produtos.
@@ -41,34 +41,26 @@ class ListaProdutos with ChangeNotifier {
     // vai dar erro se for firebase e não tiver .json no final, como é backend do railway
     // espera-se que não seja preciso.
     final response = await http.get(_url);
-    // Vai dar dump se vier vazio do firebase
-    if (response.body == 'Null') return;
-    Map<String, dynamic> dados = jsonDecode(response.body);
-    dados.forEach((idProduto, dadosProduto) {
+    List<dynamic> dados = jsonDecode(response.body);
+    // Percorrer os itens
+    for (var item in dados) {
       _itens.add(
         Produto(
-          id: idProduto,
-          nome: dadosProduto['nome'],
-          descricao: dadosProduto['descricao'],
-          preco: dadosProduto['preco'],
-          imagemUrl: dadosProduto['imagemUrl'],
-          // isFavorito vem por default como false
+          id: item['id'].toString(),
+          nome: item['nome'],
+          descricao: item['descricao'],
+          preco: item['preco'],
+          imagemUrl: item['imagemUrl'],
         ),
       );
-    });
-    notifyListeners(); // Notifica os ouvintes (como widgets) sobre a mudança nos dados.
-  }
-
-  // Método para adicionar um novo produto à lista e notificar os ouvintes sobre a mudança.
-  void addProduto(Produto produto) {
-    _itens.add(produto);
+    }
     notifyListeners(); // Notifica os ouvintes (como widgets) sobre a mudança nos dados.
   }
 
   /// CRUD - INÍCIO
   // Método que vai criar um novo produto, é possível customizar para salvar em BD depois
   // vai ser passado como parâmetro os dados enviados pela página de Formulário.
-  void createProduto(Map<String, Object> dados) {
+  Future<void> createProduto(Map<String, Object> dados) {
     // verificar se já tem algum id no produto passado, se já tiver um id, vai atualizar
     // ao invés de adicionar novo produto na memória/BD
     bool hasId = dados['id'] != null;
@@ -83,13 +75,43 @@ class ListaProdutos with ChangeNotifier {
     );
 
     // Tem ID? Se sim, vai chamar o update, senão vai criar um novo produto
-    hasId ? updateProduto(produto) : addProduto(produto);
+    return hasId ? updateProduto(produto) : addProduto(produto);
 
     /// OBS.: NÃO VAI PRECISAR NOTIFICAR COM NOTIFY LISTENERS POIS JÁ TEM NO UPDATE E ADDPRODUTO
   }
 
+  // Método para adicionar um novo produto à lista e notificar os ouvintes sobre a mudança.
+  Future<void> addProduto(Produto produto) async {
+    // await vai esperar esse método até receber uma resposa
+    final response = await http.post(
+      _url,
+      body: jsonEncode({
+        'nome': produto.nome,
+        'descricao': produto.descricao,
+        'preco': produto.preco,
+        'imagemUrl': produto.imagemUrl,
+      }),
+      headers: {
+        "content-type": "application/json",
+        "accept": "application/json",
+      },
+    );
+    final id = jsonDecode(response.body)['id'];
+    // Adicionar em memória um produto com o ID retornado pelo Backend
+    _itens.add(
+      Produto(
+        id: id.toString(),
+        nome: produto.nome,
+        descricao: produto.descricao,
+        preco: produto.preco,
+        imagemUrl: produto.imagemUrl,
+      ),
+    );
+    notifyListeners(); // Notifica os ouvintes (como widgets) sobre a mudança nos dados.
+  }
+
   // Método que vai atualizar os dados de um produto já existente.
-  void updateProduto(Produto produto) {
+  Future<void> updateProduto(Produto produto) async {
     // Se não achar o indice o indexWhere retorna index = -1, se achar retorna o indice
     int index = _itens.indexWhere((element) => element.id == produto.id);
     if (index >= 0) {

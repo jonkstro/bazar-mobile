@@ -8,6 +8,11 @@ import 'package:provider/provider.dart';
 class ProdutoPage extends StatelessWidget {
   const ProdutoPage({super.key});
 
+  // Função que vai atualizar os produtos no body no onRefresh
+  Future<void> _refreshProdutos(BuildContext context) {
+    return Provider.of<ListaProdutos>(context).carregarProdutos();
+  }
+
   @override
   Widget build(BuildContext context) {
     /// Obtém a instância de Lista de Produtos usando o Provider.
@@ -27,20 +32,24 @@ class ProdutoPage extends StatelessWidget {
         ],
       ),
       backgroundColor: Colors.white,
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: ListView.builder(
-          // Qtd de itens do provider
-          itemCount: produtos.qtdItens,
-          itemBuilder: (ctx, index) {
-            // Vai passar o item do provider de indice index
-            return Column(
-              children: [
-                ProdutoWidget(produto: produtos.itens[index]),
-                const Divider(),
-              ],
-            );
-          },
+      body: RefreshIndicator(
+        // Obs.: Aparentemente só funciona pro mobile
+        onRefresh: () => _refreshProdutos(context),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: ListView.builder(
+            // Qtd de itens do provider
+            itemCount: produtos.qtdItens,
+            itemBuilder: (ctx, index) {
+              // Vai passar o item do provider de indice index
+              return Column(
+                children: [
+                  ProdutoWidget(produto: produtos.itens[index]),
+                  const Divider(),
+                ],
+              );
+            },
+          ),
         ),
       ),
       drawer: const AppDrawer(),
