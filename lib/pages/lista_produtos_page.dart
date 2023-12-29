@@ -3,6 +3,7 @@ import 'package:bazar_do_bem/components/carrinho_badge.dart';
 import 'package:bazar_do_bem/components/produto_grid.dart';
 import 'package:bazar_do_bem/enums/filtro_enum.dart';
 import 'package:bazar_do_bem/models/carrinho.dart';
+import 'package:bazar_do_bem/models/lista_produtos.dart';
 import 'package:bazar_do_bem/utils/app_routes.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -17,6 +18,21 @@ class ListaProdutosPage extends StatefulWidget {
 
 class _ListaProdutosPageState extends State<ListaProdutosPage> {
   bool _mostrarFavoritos = false;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    // Chamar o método no provider de carregar os itens. Listen=false pois tá fora do build
+    Provider.of<ListaProdutos>(context, listen: false)
+        .carregarProdutos()
+        .then((value) {
+      setState(() {
+        // após carregar os itens, vamos setar o isloading como false
+        _isLoading = false;
+      });
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -86,7 +102,11 @@ class _ListaProdutosPageState extends State<ListaProdutosPage> {
           ),
         ],
       ),
-      body: ProdutoGrid(mostrarSomenteFavorito: _mostrarFavoritos),
+      body: _isLoading
+          ? const Center(
+              child: CircularProgressIndicator(),
+            )
+          : ProdutoGrid(mostrarSomenteFavorito: _mostrarFavoritos),
       drawer: const AppDrawer(),
     );
   }

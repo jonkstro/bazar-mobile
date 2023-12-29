@@ -79,7 +79,13 @@ Antes de criar o componente e as telas, serão preciso adicionar na model ListaP
 - A página ProductFormPage terá um widget Form que irá ter os TextFormFields dos campos necessários para cadastrar um novo produto
 - Nessa página foi feito validação dos campos usando validate do form e submit usando onSaved do form.
 
+## Passo 10
+### Adicionando o backend no projeto
+- Adicionar no pubspec o http: ^0.13.3
+- Vão ser alterados os métodos saveProduct, addProduct e updateProduct (deixar todo mundo Future e adicionar os verbos http correspondentes).
+- Adicionar _isLoading na página de formulário e na página de overview dos produtos, pra página "ficar pensando" enquanto tá fazendo as requisições http.
 
 
 
-- Componente ProdutoWidget vai receber um produto no seu construtor, que vai ser passado pela ProdutoPage.
+TODO:
+- Adicionar HTTP para acessar a API hospedada no Railway [fazer igual no projeto do github]

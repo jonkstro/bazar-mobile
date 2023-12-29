@@ -1,8 +1,10 @@
+import 'dart:convert';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
-import '../data/dummy_data.dart';
+// import '../data/dummy_data.dart';
 import 'produto.dart';
 
 import 'package:flutter/foundation.dart';
@@ -10,7 +12,12 @@ import 'package:flutter/foundation.dart';
 // Classe que representa uma lista de produtos e notifica os ouvintes quando há mudanças.
 class ListaProdutos with ChangeNotifier {
   // Lista interna de produtos, inicializada com dados fictícios (DUMMY_PRODUTOS).
-  final List<Produto> _itens = DUMMY_PRODUTOS;
+  // final List<Produto> _itens = DUMMY_PRODUTOS;
+  final List<Produto> _itens = []; // Vai ser carregado pelo backend agora
+
+  // URL do backend hospedado no railway
+  // final String _urlBase = 'https://bazar-backend.up.railway.app';
+  final _url = Uri.https('bazar-backend.up.railway.app', 'produto');
 
   // Getter para obter uma cópia imutável da lista de produtos.
   List<Produto> get itens {
@@ -25,6 +32,31 @@ class ListaProdutos with ChangeNotifier {
   // Getter para obter uma lista apenas dos produtos marcados como favoritos.
   List<Produto> get itensFavoritos {
     return _itens.where((prod) => prod.isFavorito).toList();
+  }
+
+  // Método que vai carregar os itens do backend na página inicial e na página de produtos
+  Future<void> carregarProdutos() async {
+    // antes de carregar na lista ela vai ser limpa, pra evitar duplicidade
+    _itens.clear();
+    // vai dar erro se for firebase e não tiver .json no final, como é backend do railway
+    // espera-se que não seja preciso.
+    final response = await http.get(_url);
+    // Vai dar dump se vier vazio do firebase
+    if (response.body == 'Null') return;
+    Map<String, dynamic> dados = jsonDecode(response.body);
+    dados.forEach((idProduto, dadosProduto) {
+      _itens.add(
+        Produto(
+          id: idProduto,
+          nome: dadosProduto['nome'],
+          descricao: dadosProduto['descricao'],
+          preco: dadosProduto['preco'],
+          imagemUrl: dadosProduto['imagemUrl'],
+          // isFavorito vem por default como false
+        ),
+      );
+    });
+    notifyListeners(); // Notifica os ouvintes (como widgets) sobre a mudança nos dados.
   }
 
   // Método para adicionar um novo produto à lista e notificar os ouvintes sobre a mudança.

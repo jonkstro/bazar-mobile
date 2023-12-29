@@ -26,27 +26,33 @@ class ProdutoGrid extends StatelessWidget {
     int crossAxisCount =
         (larguraTela / 300).floor(); // 150 é a largura desejada de cada item
 
-    return GridView.builder(
-      padding: const EdgeInsets.all(10),
+    return produtosCarregados.isNotEmpty
+        ? GridView.builder(
+            padding: const EdgeInsets.all(10),
 
-      /// A qtd que vai carregar é o length (10)
-      itemCount: produtosCarregados.length,
-      itemBuilder: (ctx, index) {
-        /// Tamos envolvendo com ChangeNotifier pra ele "escutar" as alterações
-        /// de favorito e atualizar a tela. Sem precisar ser statefull.
-        /// Aqui está sendo usado o ChangeNotifier.value pq ele já foi criado lá no Produto que foi carregado
-        return ChangeNotifierProvider.value(
-          /// Utiliza o ChangeNotifierProvider para fornecer o estado (Produto) ao widget filho.
-          value: produtosCarregados[index],
-          child: const ProdutoItem(),
-        );
-      },
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: crossAxisCount,
-        childAspectRatio: 3 / 2, //Proporção da box, 3x / 2y
-        crossAxisSpacing: 10, //Espaço horizontal
-        mainAxisSpacing: 10, //Espaço vertical
-      ),
-    );
+            /// A qtd que vai carregar é o length (10)
+            itemCount: produtosCarregados.length,
+            itemBuilder: (ctx, index) {
+              /// Tamos envolvendo com ChangeNotifier pra ele "escutar" as alterações
+              /// de favorito e atualizar a tela. Sem precisar ser statefull.
+              /// Aqui está sendo usado o ChangeNotifier.value pq ele já foi criado lá no Produto que foi carregado
+              return ChangeNotifierProvider.value(
+                /// Utiliza o ChangeNotifierProvider para fornecer o estado (Produto) ao widget filho.
+                value: produtosCarregados[index],
+                child: const ProdutoItem(),
+              );
+            },
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: crossAxisCount,
+              childAspectRatio: 3 / 2, //Proporção da box, 3x / 2y
+              crossAxisSpacing: 10, //Espaço horizontal
+              mainAxisSpacing: 10, //Espaço vertical
+            ),
+          )
+        : const Center(
+            child: Text(
+            'Nenhum produto cadastrado',
+            style: TextStyle(fontSize: 30, color: Colors.red),
+          ));
   }
 }
